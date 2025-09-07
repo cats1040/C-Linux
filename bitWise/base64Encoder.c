@@ -63,7 +63,7 @@ char *encode(char *str) {
 
     // split in groups of 3-3 characters
     char *substr = (char *)malloc(4 * sizeof(char));
-    substr[4] = '\0';
+    substr[3] = '\0';
     for (int i = 0; i < strlen(str); i++) {
         substr[i%3] = str[i];
         if ((i + 1)%3 == 0) {
