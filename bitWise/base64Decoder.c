@@ -69,6 +69,8 @@ void decode(char *input, int len, char *output) {
         } 
     }
 
+    output[j] = '\n';
+
     return;
 }
 
