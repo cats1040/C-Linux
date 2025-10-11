@@ -9,6 +9,12 @@ int intCmp(void *a, void *b) {
     return x - y;
 }
 
+int stringCmp(void *a, void *b) {
+    char *x = *(char **)a;
+    char *y = *(char **)b;
+    return strcmp(x, y);
+}
+
 void printInt(void *arr, int ele_size, int n) {
     for (int i = 0; i < n; i++) {
         printf("%i ", *(int *)(arr));
@@ -93,6 +99,7 @@ void mergeSort(void *arr, void *aux, int ele_size, int l, int r, int(*cmp)(void 
 
 int main() {
     int arr[] = {9, 49, 8, -10, 55, 91, 10};
+  
     int n = sizeof(arr) / sizeof(int);
     int *aux = (int *)malloc(sizeof(int) * n);
 
@@ -100,6 +107,23 @@ int main() {
     
     printInt(arr, sizeof(arr[0]), n);  
     // printf("%i", sizeof(int));
+
+    char *arr1[] = {"ab", "abe", "ajt", "ajnjnjnjnjn", "abc", "apple", "mango", "zebra", "abe", "abr", "banana", "aaa"};
+    n = sizeof(arr1) / sizeof(arr1[0]);
+    char *aux1 = (char *)malloc(sizeof(char *) * n);
+    mergeSort(arr1, aux1, sizeof(char *), 0, n - 1, stringCmp);
+
+    for (int i = 0; i < n; i++) {
+        printf("%s ", arr1[i]);
+    }
+    printf("\n");
+
+    int j = 10;
+    int *i = &j;
+
+    // char *aux2 = (int *)
+
+    mergeSort(i, aux, 5, 0,5, intCmp);
 
     // // EXPERIMENTING
     // char arr[] = {'a', 'b', 'c', 'd'};
