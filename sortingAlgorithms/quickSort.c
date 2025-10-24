@@ -19,18 +19,28 @@ void quickSort(int *arr, int l, int r) {
 
     int random = (rand() % range) + l;
     swap(arr, l, random);
+    int pivot = arr[l];
 
     for (int i = l + 1; i <= r; i++) {
         if (arr[i] < arr[l]) {
             last_index_pivot++;
+            // move all the elements < arr[l] to the left
             swap(arr, i, last_index_pivot);
         }
     }
 
+    // move pivot to its correct position
     swap(arr, l, last_index_pivot);
 
-    quickSort(arr, l, last_index_pivot - 1);
-    quickSort(arr, last_index_pivot + 1, r);
+    int nr = last_index_pivot - 1;
+    int nl = last_index_pivot + 1;
+
+    // optimized
+    while (nr >= l && arr[nr] == pivot) nr--;
+    while (nl <= r && arr[nl] == pivot) nl++;
+
+    quickSort(arr, l, nr);
+    quickSort(arr, nl, r);
 
     return; 
 }
