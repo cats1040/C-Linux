@@ -1,23 +1,14 @@
 /**
- * => RULES FOR RBT:
- * 1. Each node must be either RED or BLACK.
- * 2. The root is ALWAYS BLACK.
- * 3. 2 RED nodes can never appear in a row
- *    a RED node must always have a BLACK
- *    parent node and BLACK child nodes.
- * 4. Every path from root to NULL, should have
- *    equal number of BLACK nodes.
+ * Adelson-Velsky and Landis’s Tree - AVL Tree
+ * 
+ * Balanced tree - When any 2 sibling subtrees
+ * do not differ in height by more than one level.
+ * 
  */
-
-public class LLRBT<Key extends Comparable<Key>, Value> {
-    final boolean RED = true;
-    final boolean BLACK = false;
-
-    private int rotationCount;
-
+public class AVL<Key extends Comparable<Key>, Value> {
     private class Node {
         int size;
-        boolean color;
+        int height;
         Key key;
         Value value;
         Node left, right;
@@ -27,13 +18,15 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
             this.value = value;
             left = right = null;
             size = 1;
-            color = RED;
+            height = 1;
         }
     }
 
     private Node root;
 
-    public LLRBT() {
+    public int rotationCount;
+
+    public AVL() {
         root = null;
         rotationCount = 0;
     }
@@ -44,7 +37,6 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
 
     public void put(Key key, Value value) {
         root = put(root, key, value);
-        root.color = BLACK;
         return;
     }
 
@@ -132,9 +124,6 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
     private Node put(Node node, Key key, Value value) {
         if (node == null) {
             Node newNode = new Node(key, value);
-            if (root == null) {
-                newNode.color = BLACK;
-            }
             return newNode;
         }
 
@@ -154,23 +143,47 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
             node.right = put(node.right, key, value);
         }
 
-        // SELF BALANCING BST - RBT
+        // SELF BALANCING BST - AVL
         
-        if (colorOf(node.left) == BLACK && colorOf(node.right) == RED) {
+        int diff = diff(node);
+
+        // BALANCE
+        if (diff > 1) {
+            if (diff(node.left) == -1) {
+                // case 3: +2 and -1
+                node.left = rotateLeft(node.left);
+            }
+            
+            // case 1: +2 and +1
+            node = rotateRight(node);
+        }
+        else if (diff < -1) {
+            if (diff(node.right) == 1) {
+                // case 4: -2 and +1
+                node.right = rotateRight(node.right);
+            }
+            
+            // case 2: -2 and -1
             node = rotateLeft(node);
         }
         
-        if (colorOf(node.left) == RED && colorOf(node.left.left) == RED) {
-            node = rotateRight(node);
-        }
-        
-        if (colorOf(node.left) == RED && colorOf(node.right) == RED) {
-            node = flipColor(node);
-        }
-
         node.size = 1 + getSize(node.left) + getSize(node.right);
-
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        
         return node;
+    }
+    
+    private int diff(Node node) {
+        return getHeight(node.left) - getHeight(node.right);
+    }
+
+    private int getHeight(Node node) {
+        if (node == null) return 0;
+        
+        int l = getHeight(node.left);
+        int r = getHeight(node.right);
+
+        return 1 + Math.max(l, r);
     }
 
     private Node rotateRight(Node node) {
@@ -178,12 +191,11 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
         node.left = x.right;
         x.right = node;
 
-        x.color = node.color;
-        node.color = RED;
-
         x.size = node.size;
         node.size = 1 + getSize(node.left) + getSize(node.right);
 
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+      
         this.rotationCount++;
 
         return x;
@@ -194,28 +206,14 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
         node.right = x.left;
         x.left = node;
 
-        x.color = node.color;
-        node.color = RED;
-
         x.size = node.size;
         node.size = 1 + getSize(node.left) + getSize(node.right);
 
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+    
         this.rotationCount++;
 
         return x;
-    }
-
-    private Node flipColor(Node node) {
-        node.color = !node.color;        // parent flips
-        node.left.color = !node.left.color;
-        node.right.color = !node.right.color;
-
-        return node;
-    }
-
-    private boolean colorOf(Node node) {
-        if (node == null) return BLACK;
-        return node.color;
     }
 
     private Key floor(Node node, Key key) {
@@ -237,7 +235,7 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
         return right;
     }
 
-    private Key ceil (Node node, Key key) {
+    private Key ceil(Node node, Key key) {
         if (node == null) return null;
 
         int cmp = key.compareTo(node.key);
@@ -309,22 +307,33 @@ public class LLRBT<Key extends Comparable<Key>, Value> {
             node.right = delete(node.right, key);
         }
         
-        // SELF BALANCING BST - RBT
-        
-        if (colorOf(node.left) == BLACK && colorOf(node.right) == RED) {
+        // SELF BALANCING BST - AVL
+
+        int diff = diff(node);
+
+        // BALANCE
+        if (diff > 1) {
+            if (diff(node.left) == -1) {
+                // case 3: +2 and -1
+                node.left = rotateLeft(node.left);
+            }
+            
+            // case 1: +2 and +1
+            node = rotateRight(node);
+        }
+        else if (diff < -1) {
+            if (diff(node.left) == 1) {
+                // case 4: -2 and +1
+                node.right = rotateRight(node.right);
+            }
+            
+            // case 2: -2 and -1
             node = rotateLeft(node);
         }
         
-        if (colorOf(node.left) == RED && colorOf(node.left.left) == RED) {
-            node = rotateRight(node);
-        }
-        
-        if (colorOf(node.left) == RED && colorOf(node.right) == RED) {
-            node = flipColor(node);
-        }
-        
         node.size = 1 + getSize(node.left) + getSize(node.right);
-
+        node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+        
         return node;
     }
 

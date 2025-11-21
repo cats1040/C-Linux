@@ -1,18 +1,20 @@
 public class Test {
     public static void main(String[] args) {
         LLRBT<Integer, String> llrbt = new LLRBT<>();
-        llrbt.insert(1, "one");
-        llrbt.insert(2, "two");
-        llrbt.insert(3, "three");
-        llrbt.insert(4, "four");
-        llrbt.insert(5, "five");
-        llrbt.insert(6, "five");
-        llrbt.insert(7, "five");
-        llrbt.insert(8, "five");
+        llrbt.put(1, "one");
+        llrbt.put(2, "two");
+        llrbt.put(3, "three");
+        llrbt.put(4, "four");
+        llrbt.put(5, "five");
+        llrbt.put(6, "five");
+        llrbt.put(7, "five");
+        llrbt.put(8, "five");
 
-        // System.out.println("Search for key 10: " + llrbt.search(10)); // Output: Ten
-        // System.out.println("Search for key 15: " + llrbt.search(15)); // Output: null
-    
+        System.out.println("Search for key 10: " + llrbt.get(10)); // Output: Ten
+        System.out.println("Search for key 15: " + llrbt.get(15)); // Output: null
+        
+        System.out.println("Rotations: " + llrbt.getRotations());
+
         // System.out.println("Height of BST: " + llrbt.height()); // Output: 2
 
         BST<Integer, Integer> bst = new BST<>();
@@ -55,5 +57,8 @@ public class Test {
         System.out.println("rank(11) = " + bst.rank(11));  // 10
         System.out.println("rank(13) = " + bst.rank(13));  // 11
         System.out.println("rank(15) = " + bst.rank(15));  // 11 (max rank)
+
+        // ------------- AVL ------------
+
     }
 }
